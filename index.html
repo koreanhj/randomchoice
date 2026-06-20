@@ -3,46 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>발표 번호 뽑기</title>
+  <title>물총 발표 번호 뽑기</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="app">
-    <h1>발표 번호 뽑기</h1>
-    <p class="subtitle">구간별로 번호를 뽑고, 3초 뒤 결과를 확인하세요.</p>
+    <header class="hero">
+      <div class="flag flag1"></div>
+      <div class="flag flag2"></div>
+      <div class="leaf">🌿</div>
 
-    <section class="card settings">
+      <h1>
+        <span>발표</span>
+        <strong>번호</strong>
+        <span>뽑기</span>
+      </h1>
+      <p>물총을 쏴서 행운의 번호를 뽑아보세요!</p>
+    </header>
+
+    <section class="setting-card">
       <label>
-        반 이름
+        <span>👥 반 이름</span>
         <input type="text" id="className" placeholder="예: 1학년 3반" />
       </label>
 
       <label>
-        학생 수
+        <span>👤 학생 수</span>
         <input type="number" id="studentCount" min="1" max="50" value="28" />
       </label>
 
-      <button id="setBtn">설정하기</button>
+      <button id="setBtn">⚙ 설정하기</button>
     </section>
 
-    <section class="card draw-area">
-      <div id="classTitle">우리 반</div>
-      <div id="resultNumber">?</div>
-      <p id="statusText">뽑을 구간을 선택하세요.</p>
+    <section class="play-card">
+      <div class="speech-bubble">물총을<br />쏴 보세요!</div>
 
-      <div class="range-buttons">
-        <button data-start="1" data-end="10">1~10번</button>
-        <button data-start="11" data-end="20">11~20번</button>
-        <button data-start="21" data-end="28">21~28번</button>
+      <div class="water-gun">
+        <div class="tank"></div>
+        <div class="body"></div>
+        <div class="nozzle"></div>
+        <div class="handle"></div>
+        <div class="trigger"></div>
       </div>
 
-      <button id="resetBtn" class="secondary">처음부터 다시</button>
+      <div id="waterStream" class="water-stream"></div>
+
+      <div id="splash" class="splash">
+        <span class="splash-text">?</span>
+      </div>
+
+      <div id="statusText" class="status-text">뽑을 구간을 선택하세요.</div>
+
+      <button id="shootBtn" class="shoot-btn" disabled>💧 물총 쏘기!</button>
     </section>
 
-    <section class="card">
-      <h2>뽑힌 번호</h2>
-      <div id="pickedList" class="picked-list"></div>
+    <section class="range-card">
+      <h2>💧 뽑을 구간을 선택하세요 💧</h2>
+
+      <div class="range-buttons">
+        <button class="range-btn green active" data-start="1" data-end="10">
+          1 ~ 10번
+        </button>
+        <button class="range-btn orange" data-start="11" data-end="20">
+          11 ~ 20번
+        </button>
+        <button class="range-btn purple" data-start="21" data-end="28">
+          21 ~ 28번
+        </button>
+      </div>
     </section>
+
+    <section class="picked-card">
+      <h2>💦 뽑힌 번호 💦</h2>
+      <div id="pickedList" class="picked-list"></div>
+      <button id="resetBtn" class="reset-btn">처음부터 다시</button>
+    </section>
+
+    <footer>
+      모두에게 공정한 기회를! 재미있게 발표해요! 💙
+    </footer>
   </main>
 
   <script src="script.js"></script>
