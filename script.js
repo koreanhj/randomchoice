@@ -8,6 +8,7 @@ const rangeButtons = document.querySelectorAll(".range-btn");
 const splash = document.getElementById("splash");
 const splashText = document.querySelector(".splash-text");
 const statusText = document.getElementById("statusText");
+const soundText = document.getElementById("soundText");
 const waterStream = document.getElementById("waterStream");
 const pickedList = document.getElementById("pickedList");
 
@@ -15,6 +16,100 @@ let studentCount = 28;
 let selectedRange = { start: 1, end: 10 };
 let pickedNumbers = [];
 let isDrawing = false;
+let audioContext = null;
+
+function getAudioContext() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioContext;
+}
+
+function playPiyongSound() {
+  const ctx = getAudioContext();
+  const now = ctx.currentTime;
+
+  const oscillator = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(520, now);
+  oscillator.frequency.exponentialRampToValueAtTime(1080, now + 0.18);
+  oscillator.frequency.exponentialRampToValueAtTime(700, now + 0.32);
+
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.24, now + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+
+  oscillator.start(now);
+  oscillator.stop(now + 0.38);
+
+  showSoundText("피용!");
+}
+
+function playPangSound() {
+  const ctx = getAudioContext();
+  const now = ctx.currentTime;
+
+  const oscillator = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  oscillator.type = "triangle";
+  oscillator.frequency.setValueAtTime(190, now);
+  oscillator.frequency.exponentialRampToValueAtTime(70, now + 0.18);
+
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.35, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+
+  oscillator.start(now);
+  oscillator.stop(now + 0.3);
+
+  setTimeout(() => {
+    playSparkleSound();
+  }, 80);
+
+  showSoundText("팡!");
+}
+
+function playSparkleSound() {
+  const ctx = getAudioContext();
+  const now = ctx.currentTime;
+
+  [880, 1175, 1568].forEach((frequency, index) => {
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const startTime = now + index * 0.06;
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+
+    gain.gain.setValueAtTime(0.001, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.14, startTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.16);
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.start(startTime);
+    oscillator.stop(startTime + 0.18);
+  });
+}
+
+function showSoundText(text) {
+  soundText.textContent = text;
+  soundText.classList.remove("show");
+
+  void soundText.offsetWidth;
+
+  soundText.classList.add("show");
+}
 
 function setupClass() {
   studentCount = Number(studentCountInput.value);
@@ -32,6 +127,8 @@ function setupClass() {
 }
 
 function selectRange(button) {
+  if (isDrawing) return;
+
   rangeButtons.forEach((btn) => btn.classList.remove("active"));
   button.classList.add("active");
 
@@ -64,6 +161,8 @@ function shootWaterGun() {
   isDrawing = true;
   setDisabled(true);
 
+  playPiyongSound();
+
   splashText.textContent = "!";
   statusText.textContent = "물총 발사 준비 중...";
   splash.classList.add("loading");
@@ -79,6 +178,8 @@ function shootWaterGun() {
     const selectedNumber = possibleNumbers[randomIndex];
 
     pickedNumbers.push(selectedNumber);
+
+    playPangSound();
 
     splash.classList.remove("loading");
     splash.classList.add("ready");
