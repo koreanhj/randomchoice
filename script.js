@@ -1,168 +1,129 @@
-* {
-  box-sizing: border-box;
-}
+const classNameInput = document.getElementById("className");
+const studentCountInput = document.getElementById("studentCount");
+const setBtn = document.getElementById("setBtn");
+const resetBtn = document.getElementById("resetBtn");
+const shootBtn = document.getElementById("shootBtn");
+const rangeButtons = document.querySelectorAll(".range-btn");
 
-body {
-  margin: 0;
-  font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
-  background: linear-gradient(135deg, #e3f2fd, #fff8e1);
-  color: #222;
-}
+const splash = document.getElementById("splash");
+const splashText = document.querySelector(".splash-text");
+const statusText = document.getElementById("statusText");
+const waterStream = document.getElementById("waterStream");
+const pickedList = document.getElementById("pickedList");
 
-.app {
-  width: min(92%, 720px);
-  margin: 40px auto;
-  text-align: center;
-}
+let studentCount = 28;
+let selectedRange = { start: 1, end: 10 };
+let pickedNumbers = [];
+let isDrawing = false;
 
-h1 {
-  font-size: 40px;
-  margin-bottom: 8px;
-}
+function setupClass() {
+  studentCount = Number(studentCountInput.value);
 
-.subtitle {
-  margin-bottom: 28px;
-  color: #555;
-}
-
-.card {
-  background: white;
-  border-radius: 24px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-}
-
-.settings {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 12px;
-  align-items: end;
-}
-
-label {
-  text-align: left;
-  font-weight: 700;
-}
-
-input {
-  width: 100%;
-  margin-top: 8px;
-  padding: 12px;
-  border: 2px solid #ddd;
-  border-radius: 12px;
-  font-size: 16px;
-}
-
-button {
-  border: none;
-  border-radius: 14px;
-  padding: 13px 20px;
-  font-size: 17px;
-  font-weight: 800;
-  cursor: pointer;
-  background: #1976d2;
-  color: white;
-}
-
-button:hover {
-  background: #0d47a1;
-}
-
-button:disabled {
-  background: #aaa;
-  cursor: not-allowed;
-}
-
-.secondary {
-  background: #777;
-  margin-top: 16px;
-}
-
-.secondary:hover {
-  background: #444;
-}
-
-#classTitle {
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 12px;
-}
-
-#resultNumber {
-  width: 180px;
-  height: 180px;
-  margin: 20px auto 10px;
-  border-radius: 50%;
-  background: #ffca28;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 86px;
-  font-weight: 900;
-}
-
-#resultNumber.loading {
-  animation: shake 0.25s infinite;
-  font-size: 40px;
-}
-
-#statusText {
-  font-weight: 700;
-  color: #555;
-  min-height: 24px;
-}
-
-.range-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 18px;
-  flex-wrap: wrap;
-}
-
-.range-buttons button {
-  background: #1565c0;
-}
-
-h2 {
-  margin-top: 0;
-}
-
-.picked-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  min-height: 42px;
-}
-
-.picked-number {
-  background: #e3f2fd;
-  color: #0d47a1;
-  border-radius: 999px;
-  padding: 10px 15px;
-  font-weight: 800;
-}
-
-@keyframes shake {
-  0% { transform: rotate(-3deg); }
-  50% { transform: rotate(3deg); }
-  100% { transform: rotate(-3deg); }
-}
-
-@media (max-width: 640px) {
-  .settings {
-    grid-template-columns: 1fr;
+  if (!studentCount || studentCount < 1) {
+    alert("학생 수를 1명 이상으로 입력해 주세요.");
+    return;
   }
 
-  h1 {
-    font-size: 32px;
+  pickedNumbers = [];
+  splashText.textContent = "?";
+  statusText.textContent = "뽑을 구간을 선택하세요.";
+  shootBtn.disabled = false;
+  renderPickedList();
+}
+
+function selectRange(button) {
+  rangeButtons.forEach((btn) => btn.classList.remove("active"));
+  button.classList.add("active");
+
+  selectedRange = {
+    start: Number(button.dataset.start),
+    end: Number(button.dataset.end)
+  };
+
+  statusText.textContent =
+    `${selectedRange.start}~${selectedRange.end}번 구간이 선택되었습니다.`;
+  shootBtn.disabled = false;
+}
+
+function shootWaterGun() {
+  if (isDrawing) return;
+
+  const possibleNumbers = [];
+
+  for (let i = selectedRange.start; i <= selectedRange.end; i++) {
+    if (i <= studentCount && !pickedNumbers.includes(i)) {
+      possibleNumbers.push(i);
+    }
   }
 
-  #resultNumber {
-    width: 150px;
-    height: 150px;
-    font-size: 70px;
+  if (possibleNumbers.length === 0) {
+    alert(`${selectedRange.start}~${selectedRange.end}번 구간에는 더 이상 뽑을 번호가 없습니다.`);
+    return;
   }
+
+  isDrawing = true;
+  setDisabled(true);
+
+  splashText.textContent = "!";
+  statusText.textContent = "물총 발사 준비 중...";
+  splash.classList.add("loading");
+  waterStream.classList.add("shooting");
+
+  setTimeout(() => {
+    statusText.textContent = "쏜다! 쏜다! 쏜다!";
+    splashText.textContent = "💦";
+  }, 1000);
+
+  setTimeout(() => {
+    const randomIndex = Math.floor(Math.random() * possibleNumbers.length);
+    const selectedNumber = possibleNumbers[randomIndex];
+
+    pickedNumbers.push(selectedNumber);
+
+    splash.classList.remove("loading");
+    splash.classList.add("ready");
+    waterStream.classList.remove("shooting");
+
+    splashText.textContent = selectedNumber;
+    statusText.textContent = `${selectedNumber}번 학생 발표!`;
+
+    renderPickedList();
+
+    setTimeout(() => {
+      splash.classList.remove("ready");
+    }, 600);
+
+    isDrawing = false;
+    setDisabled(false);
+  }, 3000);
 }
+
+function setDisabled(disabled) {
+  setBtn.disabled = disabled;
+  resetBtn.disabled = disabled;
+  shootBtn.disabled = disabled;
+  rangeButtons.forEach((button) => {
+    button.disabled = disabled;
+  });
+}
+
+function renderPickedList() {
+  pickedList.innerHTML = "";
+
+  pickedNumbers.forEach((number) => {
+    const span = document.createElement("span");
+    span.className = "picked-number";
+    span.textContent = `${number}번`;
+    pickedList.appendChild(span);
+  });
+}
+
+setBtn.addEventListener("click", setupClass);
+resetBtn.addEventListener("click", setupClass);
+shootBtn.addEventListener("click", shootWaterGun);
+
+rangeButtons.forEach((button) => {
+  button.addEventListener("click", () => selectRange(button));
+});
+
+setupClass();
