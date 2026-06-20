@@ -1,101 +1,486 @@
-const classNameInput = document.getElementById("className");
-const studentCountInput = document.getElementById("studentCount");
-const setBtn = document.getElementById("setBtn");
-const resetBtn = document.getElementById("resetBtn");
-const classTitle = document.getElementById("classTitle");
-const resultNumber = document.getElementById("resultNumber");
-const pickedList = document.getElementById("pickedList");
-const statusText = document.getElementById("statusText");
-const rangeButtons = document.querySelectorAll(".range-buttons button");
+* {
+  box-sizing: border-box;
+}
 
-let studentCount = 28;
-let pickedNumbers = [];
-let isDrawing = false;
+body {
+  margin: 0;
+  font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+  background:
+    radial-gradient(circle at 10% 22%, white 0 6%, transparent 7%),
+    radial-gradient(circle at 90% 18%, white 0 8%, transparent 9%),
+    linear-gradient(180deg, #6fd3ff 0%, #dff8ff 38%, #f9fdff 100%);
+  color: #07336b;
+  min-height: 100vh;
+}
 
-function setupClass() {
-  const className = classNameInput.value.trim() || "우리 반";
-  studentCount = Number(studentCountInput.value);
+.app {
+  width: min(92%, 960px);
+  margin: 0 auto;
+  padding: 24px 0 34px;
+  text-align: center;
+}
 
-  if (!studentCount || studentCount < 1) {
-    alert("학생 수를 1명 이상으로 입력해 주세요.");
-    return;
+.hero {
+  position: relative;
+  padding: 20px 0 18px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(42px, 8vw, 78px);
+  letter-spacing: -4px;
+  font-weight: 900;
+  color: white;
+  text-shadow:
+    0 5px 0 #0649bd,
+    0 10px 16px rgba(0, 75, 180, 0.4);
+}
+
+.hero h1 strong {
+  color: #ffd84a;
+  margin: 0 12px;
+}
+
+.hero p {
+  margin: 16px 0 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: #06377a;
+}
+
+.flag {
+  position: absolute;
+  top: 5px;
+  width: 0;
+  height: 0;
+  border-top: 22px solid transparent;
+  border-bottom: 22px solid transparent;
+}
+
+.flag1 {
+  left: 10px;
+  border-left: 42px solid #ff7b3d;
+  transform: rotate(-25deg);
+}
+
+.flag2 {
+  left: 64px;
+  border-left: 42px solid #ffd447;
+  transform: rotate(-15deg);
+}
+
+.leaf {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 48px;
+}
+
+.setting-card,
+.range-card,
+.picked-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 12px 26px rgba(0, 104, 180, 0.14);
+}
+
+.setting-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
+
+label {
+  text-align: left;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+label span {
+  display: block;
+  margin-bottom: 8px;
+}
+
+input {
+  width: 100%;
+  border: 3px solid #d5e3f3;
+  border-radius: 14px;
+  padding: 15px 18px;
+  font-size: 18px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #2678ff;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 900;
+  transition: 0.2s;
+}
+
+#setBtn {
+  padding: 17px 28px;
+  border-radius: 16px;
+  font-size: 20px;
+  background: linear-gradient(180deg, #2479ff, #0954d8);
+  color: white;
+  box-shadow: 0 6px 0 #063a98;
+}
+
+#setBtn:active,
+.shoot-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #063a98;
+}
+
+.play-card {
+  position: relative;
+  min-height: 390px;
+  overflow: hidden;
+  border: 8px solid white;
+  border-radius: 28px;
+  margin-bottom: 22px;
+  background:
+    linear-gradient(rgba(255,255,255,0.22) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255,255,255,0.22) 2px, transparent 2px),
+    linear-gradient(135deg, #bdeeff, #ecfbff);
+  background-size: 60px 60px, 60px 60px, auto;
+  box-shadow: 0 14px 30px rgba(0, 104, 180, 0.2);
+}
+
+.speech-bubble {
+  position: absolute;
+  left: 86px;
+  top: 48px;
+  width: 150px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: white;
+  color: #0b53cf;
+  font-size: 22px;
+  font-weight: 900;
+  transform: rotate(-12deg);
+  box-shadow: 0 7px 16px rgba(0, 95, 160, 0.16);
+}
+
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: 2px;
+  border-left: 20px solid white;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  transform: rotate(30deg);
+}
+
+.water-gun {
+  position: absolute;
+  left: 70px;
+  bottom: 74px;
+  width: 260px;
+  height: 190px;
+  transform: rotate(-8deg);
+}
+
+.tank {
+  position: absolute;
+  left: 0;
+  top: 28px;
+  width: 150px;
+  height: 70px;
+  border-radius: 40px;
+  background: linear-gradient(180deg, #ffbf2f, #ff7a00);
+  box-shadow: inset 0 8px 0 rgba(255,255,255,0.35);
+}
+
+.body {
+  position: absolute;
+  left: 84px;
+  top: 70px;
+  width: 120px;
+  height: 62px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #24a7ff, #0472dd);
+}
+
+.nozzle {
+  position: absolute;
+  left: 190px;
+  top: 78px;
+  width: 70px;
+  height: 34px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #8be041, #39b91f);
+}
+
+.handle {
+  position: absolute;
+  left: 105px;
+  top: 118px;
+  width: 62px;
+  height: 92px;
+  border-radius: 16px 16px 28px 28px;
+  background: linear-gradient(180deg, #078dff, #0056c7);
+  transform: skewX(-8deg);
+}
+
+.trigger {
+  position: absolute;
+  left: 162px;
+  top: 124px;
+  width: 24px;
+  height: 38px;
+  border-radius: 15px;
+  background: #ff8a00;
+}
+
+.water-stream {
+  position: absolute;
+  left: 300px;
+  top: 188px;
+  width: 260px;
+  height: 80px;
+  opacity: 0;
+}
+
+.water-stream.shooting {
+  opacity: 1;
+}
+
+.water-stream::before,
+.water-stream::after {
+  content: "💧 💦 💧 💦 💧";
+  position: absolute;
+  font-size: 30px;
+  color: #1aa7ff;
+  animation: waterMove 0.35s infinite linear;
+}
+
+.water-stream::after {
+  top: 32px;
+  left: 24px;
+  font-size: 24px;
+  animation-delay: 0.1s;
+}
+
+.splash {
+  position: absolute;
+  right: 90px;
+  top: 72px;
+  width: 260px;
+  height: 260px;
+  display: grid;
+  place-items: center;
+  background: #43c7ff;
+  clip-path: polygon(
+    50% 0%, 60% 23%, 82% 10%, 77% 36%, 100% 45%,
+    77% 55%, 92% 82%, 63% 74%, 50% 100%, 38% 74%,
+    10% 88%, 24% 58%, 0% 45%, 25% 35%, 18% 10%, 40% 23%
+  );
+  filter: drop-shadow(0 12px 18px rgba(0, 118, 200, 0.22));
+}
+
+.splash::before {
+  content: "";
+  width: 165px;
+  height: 165px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+}
+
+.splash-text {
+  position: relative;
+  z-index: 2;
+  font-size: 86px;
+  font-weight: 900;
+  color: #0d54d9;
+}
+
+.splash.ready {
+  animation: pop 0.5s ease;
+}
+
+.splash.loading {
+  animation: splashShake 0.18s infinite;
+}
+
+.status-text {
+  position: absolute;
+  right: 108px;
+  top: 312px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #0a2c68;
+}
+
+.shoot-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: min(80%, 360px);
+  padding: 18px;
+  border-radius: 18px;
+  font-size: 26px;
+  color: white;
+  background: linear-gradient(180deg, #368cff, #0758db);
+  box-shadow: 0 7px 0 #0642a5;
+}
+
+.shoot-btn:disabled {
+  background: #aabbd0;
+  box-shadow: 0 7px 0 #7d8da0;
+  cursor: not-allowed;
+}
+
+.range-card h2,
+.picked-card h2 {
+  margin-top: 0;
+  font-size: 24px;
+}
+
+.range-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.range-btn {
+  padding: 18px;
+  border-radius: 18px;
+  background: white;
+  font-size: 26px;
+  box-shadow: 0 5px 0 rgba(0,0,0,0.12);
+}
+
+.range-btn.green {
+  color: #13a85b;
+  border: 3px solid #9ee4bf;
+}
+
+.range-btn.orange {
+  color: #ff7c1a;
+  border: 3px solid #ffc499;
+}
+
+.range-btn.purple {
+  color: #8f4be8;
+  border: 3px solid #d6b1ff;
+}
+
+.range-btn.active {
+  transform: translateY(3px);
+  background: #eff9ff;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+}
+
+.picked-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  min-height: 58px;
+  margin: 18px 0;
+}
+
+.picked-number {
+  background: #e5f5ff;
+  color: #0754d4;
+  padding: 13px 22px;
+  border-radius: 999px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.reset-btn {
+  padding: 12px 24px;
+  border-radius: 14px;
+  background: #7389a6;
+  color: white;
+  font-size: 18px;
+}
+
+footer {
+  margin-top: 10px;
+  color: #7d91a8;
+  font-weight: 800;
+}
+
+@keyframes waterMove {
+  from {
+    transform: translateX(-20px);
+  }
+  to {
+    transform: translateX(30px);
+  }
+}
+
+@keyframes splashShake {
+  0% { transform: rotate(-3deg) scale(1); }
+  50% { transform: rotate(3deg) scale(1.05); }
+  100% { transform: rotate(-3deg) scale(1); }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.5); }
+  80% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 760px) {
+  .setting-card {
+    grid-template-columns: 1fr;
   }
 
-  pickedNumbers = [];
-  classTitle.textContent = className;
-  resultNumber.textContent = "?";
-  statusText.textContent = "뽑을 구간을 선택하세요.";
-  resultNumber.classList.remove("loading");
-  renderPickedList();
-}
-
-function drawByRange(start, end) {
-  if (isDrawing) return;
-
-  const possibleNumbers = [];
-
-  for (let i = start; i <= end; i++) {
-    if (i <= studentCount && !pickedNumbers.includes(i)) {
-      possibleNumbers.push(i);
-    }
+  .play-card {
+    min-height: 520px;
   }
 
-  if (possibleNumbers.length === 0) {
-    alert(`${start}번부터 ${end}번까지는 더 이상 뽑을 번호가 없습니다.`);
-    return;
+  .water-gun {
+    left: 30px;
+    top: 170px;
+    transform: scale(0.8) rotate(-8deg);
+    transform-origin: left top;
   }
 
-  isDrawing = true;
-  setButtonsDisabled(true);
+  .splash {
+    right: 50%;
+    transform: translateX(50%);
+    top: 40px;
+    width: 220px;
+    height: 220px;
+  }
 
-  resultNumber.textContent = "두근!";
-  resultNumber.classList.add("loading");
-  statusText.textContent = `${start}번부터 ${end}번까지 번호를 뽑는 중...`;
+  .splash-text {
+    font-size: 72px;
+  }
 
-  setTimeout(() => {
-    const randomIndex = Math.floor(Math.random() * possibleNumbers.length);
-    const selectedNumber = possibleNumbers[randomIndex];
+  .status-text {
+    width: 100%;
+    right: 0;
+    top: 300px;
+  }
 
-    pickedNumbers.push(selectedNumber);
-    resultNumber.textContent = selectedNumber;
-    resultNumber.classList.remove("loading");
-    statusText.textContent = `${selectedNumber}번 학생 발표!`;
+  .shoot-btn {
+    bottom: 26px;
+  }
 
-    renderPickedList();
+  .range-buttons {
+    grid-template-columns: 1fr;
+  }
 
-    isDrawing = false;
-    setButtonsDisabled(false);
-  }, 3000);
+  .hero h1 {
+    letter-spacing: -2px;
+  }
 }
-
-function setButtonsDisabled(disabled) {
-  rangeButtons.forEach((button) => {
-    button.disabled = disabled;
-  });
-  setBtn.disabled = disabled;
-  resetBtn.disabled = disabled;
-}
-
-function renderPickedList() {
-  pickedList.innerHTML = "";
-
-  pickedNumbers.forEach((number) => {
-    const span = document.createElement("span");
-    span.className = "picked-number";
-    span.textContent = `${number}번`;
-    pickedList.appendChild(span);
-  });
-}
-
-rangeButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const start = Number(button.dataset.start);
-    const end = Number(button.dataset.end);
-    drawByRange(start, end);
-  });
-});
-
-setBtn.addEventListener("click", setupClass);
-resetBtn.addEventListener("click", setupClass);
-
-setupClass();
