@@ -315,6 +315,24 @@ button {
   animation: splashShake 0.18s infinite;
 }
 
+.sound-text {
+  position: absolute;
+  left: 360px;
+  top: 120px;
+  font-size: 44px;
+  font-weight: 900;
+  color: #ffdf3d;
+  text-shadow:
+    3px 3px 0 #07336b,
+    -2px -2px 0 white;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sound-text.show {
+  animation: soundPop 0.8s ease;
+}
+
 .status-text {
   position: absolute;
   right: 108px;
@@ -438,6 +456,21 @@ footer {
   100% { transform: scale(1); }
 }
 
+@keyframes soundPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-10deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.2) rotate(5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8) rotate(-5deg);
+  }
+}
+
 @media (max-width: 760px) {
   .setting-card {
     grid-template-columns: 1fr;
@@ -466,10 +499,17 @@ footer {
     font-size: 72px;
   }
 
+  .sound-text {
+    left: 50%;
+    top: 265px;
+    transform: translateX(-50%);
+    font-size: 38px;
+  }
+
   .status-text {
     width: 100%;
     right: 0;
-    top: 300px;
+    top: 330px;
   }
 
   .shoot-btn {
