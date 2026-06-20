@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>발표 번호 뽑기</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <h1>발표 번호 뽑기</h1>
+    <p class="subtitle">중복 없이 학생 번호를 무작위로 뽑아 보세요.</p>
+
+    <section class="card settings">
+      <label>
+        반 이름
+        <input type="text" id="className" placeholder="예: 1학년 3반" />
+      </label>
+
+      <label>
+        학생 수
+        <input type="number" id="studentCount" min="1" max="50" value="30" />
+      </label>
+
+      <button id="setBtn">설정하기</button>
+    </section>
+
+    <section class="card draw-area">
+      <div id="classTitle">우리 반</div>
+      <div id="resultNumber">?</div>
+
+      <button id="drawBtn">번호 뽑기</button>
+      <button id="resetBtn" class="secondary">처음부터 다시</button>
+    </section>
+
+    <section class="card">
+      <h2>뽑힌 번호</h2>
+      <div id="pickedList" class="picked-list"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
